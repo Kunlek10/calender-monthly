@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+  <title>Calendar</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <header class="cal-header">
+    <button id="btn-prev" class="nav-btn" aria-label="Previous month">&#8249;</button>
+    <h1 id="month-title" class="month-title"></h1>
+    <button id="btn-next" class="nav-btn" aria-label="Next month">&#8250;</button>
+  </header>
+
+  <main class="cal-wrapper">
+    <div id="calendar-grid" class="calendar-grid"></div>
+  </main>
+
+  <button id="btn-add" class="fab" aria-label="Add event">+</button>
+
+  <!-- Event Modal -->
+  <dialog id="event-modal" class="event-modal" aria-modal="true" aria-labelledby="modal-heading">
+    <div class="modal-inner">
+      <h2 id="modal-heading" class="modal-title">Add Event</h2>
+
+      <form id="event-form" novalidate>
+        <div class="field">
+          <label for="f-title">Title <span class="req" aria-hidden="true">*</span></label>
+          <input id="f-title" name="title" type="text" maxlength="120" autocomplete="off" />
+          <span class="err" id="err-title" role="alert"></span>
+        </div>
+
+        <div class="field">
+          <label for="f-date">Date <span class="req" aria-hidden="true">*</span></label>
+          <input id="f-date" name="date" type="date" />
+          <span class="err" id="err-date" role="alert"></span>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="f-start">Start time</label>
+            <input id="f-start" name="startTime" type="time" />
+          </div>
+          <div class="field">
+            <label for="f-end">End time</label>
+            <input id="f-end" name="endTime" type="time" />
+          </div>
+        </div>
+        <span class="err" id="err-time" role="alert"></span>
+
+        <div class="field">
+          <label for="f-desc">Description</label>
+          <textarea id="f-desc" name="description" rows="3" maxlength="500"></textarea>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" id="btn-delete" class="btn-delete" hidden>Delete</button>
+          <div class="modal-actions-right">
+            <button type="button" id="btn-cancel" class="btn-secondary">Cancel</button>
+            <button type="submit" id="btn-save" class="btn-primary">Save</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
+  <script src="main.js"></script>
+</body>
+</html>

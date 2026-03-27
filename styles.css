@@ -1,0 +1,363 @@
+/* ── Reset & Base ─────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:          #f5f5f7;
+  --surface:     #ffffff;
+  --border:      #e0e0e0;
+  --text:        #1a1a1a;
+  --text-muted:  #8a8a8a;
+  --accent:      #3b82f6;
+  --accent-dark: #2563eb;
+  --danger:      #ef4444;
+  --danger-dark: #dc2626;
+  --today-bg:    #eff6ff;
+  --today-ring:  #3b82f6;
+  --other-month: #f9f9f9;
+  --chip-bg:     #dbeafe;
+  --chip-text:   #1e40af;
+  --radius:      10px;
+  --shadow:      0 4px 24px rgba(0,0,0,.12);
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100dvh;
+}
+
+/* ── Header ───────────────────────────────────────────────── */
+.cal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px 12px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.month-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  letter-spacing: .01em;
+}
+
+.nav-btn {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  width: 36px;
+  height: 36px;
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--text);
+  transition: background .15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.nav-btn:hover { background: var(--bg); }
+
+/* ── Calendar wrapper ─────────────────────────────────────── */
+.cal-wrapper {
+  padding: 16px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* ── Grid ─────────────────────────────────────────────────── */
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  gap: 1px;
+}
+
+/* Day-of-week headers */
+.dow-header {
+  background: var(--surface);
+  text-align: center;
+  padding: 8px 4px;
+  font-size: .75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--text-muted);
+}
+
+/* Day cells */
+.day-cell {
+  background: var(--surface);
+  min-height: 110px;
+  padding: 6px;
+  cursor: pointer;
+  transition: background .1s;
+  position: relative;
+  overflow: hidden;
+}
+.day-cell:hover { background: #f0f7ff; }
+
+.day-cell.other-month {
+  background: var(--other-month);
+  color: var(--text-muted);
+}
+.day-cell.other-month .day-num { color: var(--text-muted); }
+
+.day-cell.today {
+  background: var(--today-bg);
+}
+.day-cell.today .day-num {
+  background: var(--today-ring);
+  color: #fff;
+  border-radius: 50%;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.day-num {
+  font-size: .82rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Event chips */
+.event-chip {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--chip-bg);
+  color: var(--chip-text);
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: .74rem;
+  font-weight: 500;
+  margin-bottom: 3px;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  transition: background .12s;
+  border: none;
+  width: 100%;
+  text-align: left;
+}
+.event-chip:hover { background: #bfdbfe; }
+
+.chip-time {
+  font-size: .68rem;
+  opacity: .75;
+  flex-shrink: 0;
+}
+
+.more-events {
+  font-size: .7rem;
+  color: var(--text-muted);
+  padding: 1px 4px;
+}
+
+/* ── FAB ──────────────────────────────────────────────────── */
+.fab {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  font-size: 1.6rem;
+  line-height: 1;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(59,130,246,.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .15s, transform .1s;
+  z-index: 20;
+}
+.fab:hover { background: var(--accent-dark); transform: scale(1.06); }
+
+/* ── Modal (native <dialog>) ──────────────────────────────── */
+.event-modal {
+  border: none;
+  border-radius: var(--radius);
+  padding: 0;
+  width: min(480px, calc(100vw - 32px));
+  box-shadow: var(--shadow);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  margin: 0;
+  position: fixed;
+}
+
+.event-modal::backdrop {
+  background: rgba(0,0,0,.35);
+  backdrop-filter: blur(2px);
+}
+
+.modal-inner {
+  padding: 28px 24px 20px;
+}
+
+.modal-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+/* Form fields */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 14px;
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 0;
+}
+
+label {
+  font-size: .82rem;
+  font-weight: 500;
+  color: var(--text);
+}
+.req { color: var(--danger); }
+
+input[type="text"],
+input[type="date"],
+input[type="time"],
+textarea {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: .9rem;
+  font-family: inherit;
+  color: var(--text);
+  background: var(--surface);
+  transition: border-color .15s, box-shadow .15s;
+  width: 100%;
+}
+input:focus, textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(59,130,246,.15);
+}
+input.invalid, textarea.invalid {
+  border-color: var(--danger);
+}
+
+textarea { resize: vertical; }
+
+.err {
+  font-size: .78rem;
+  color: var(--danger);
+  min-height: 1.1em;
+}
+
+/* Modal action buttons */
+.modal-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 20px;
+  gap: 8px;
+}
+.modal-actions-right {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.btn-primary, .btn-secondary, .btn-delete {
+  border: none;
+  border-radius: 7px;
+  padding: 8px 20px;
+  font-size: .88rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background .15s, transform .08s;
+}
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+}
+.btn-primary:hover { background: var(--accent-dark); }
+
+.btn-secondary {
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+.btn-secondary:hover { background: #e8e8e8; }
+
+.btn-delete {
+  background: none;
+  color: var(--danger);
+  border: 1px solid var(--danger);
+  padding: 8px 16px;
+}
+.btn-delete:hover { background: #fef2f2; }
+
+/* ── Responsive ───────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .cal-header { padding: 14px 12px 10px; }
+  .month-title { font-size: 1.05rem; }
+  .cal-wrapper { padding: 8px; }
+
+  .day-cell {
+    min-height: 64px;
+    padding: 4px;
+  }
+
+  .event-chip {
+    padding: 2px 4px;
+    font-size: 0;        /* hide text on tiny cells */
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    min-width: 8px;
+    flex-shrink: 0;
+    display: inline-block;
+    margin-right: 2px;
+    margin-bottom: 2px;
+  }
+  .chip-time { display: none; }
+
+  /* Wrap chips horizontally */
+  .day-cell > :not(.day-num) {
+    display: inline-flex;
+  }
+
+  .dow-header { font-size: .65rem; padding: 6px 2px; }
+  .day-num { font-size: .75rem; width: 22px; height: 22px; }
+
+  .field-row { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 400px) {
+  .event-modal { width: calc(100vw - 16px); }
+  .modal-inner { padding: 20px 16px 16px; }
+}
