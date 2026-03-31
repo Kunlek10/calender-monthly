@@ -76,9 +76,12 @@ function renderCalendar() {
   calGrid.innerHTML = '';
 
   // DOW headers
-  DAYS.forEach(d => {
+  const DOW_FULL = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  DAYS.forEach((d, i) => {
     const h = document.createElement('div');
     h.className = 'dow-header';
+    h.setAttribute('role', 'columnheader');
+    h.setAttribute('aria-label', DOW_FULL[i]);
     h.textContent = d;
     calGrid.appendChild(h);
   });
@@ -113,6 +116,8 @@ function renderCalendar() {
 
     const dateStr = `${year}-${String(month + 1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
     cell.dataset.date = dateStr;
+    cell.setAttribute('role', 'gridcell');
+    cell.setAttribute('tabindex', '0');
 
     if (!isCurrentMonth) cell.classList.add('other-month');
     if (dateStr === todayStr) cell.classList.add('today');
@@ -126,6 +131,10 @@ function renderCalendar() {
       .filter(e => e.date === dateStr)
       .sort((a, b) => (a.startTime || '').localeCompare(b.startTime || ''));
 
+    const evCount = dayEvents.length;
+    const cellLabel = `${MONTHS[month]} ${day}, ${year}${evCount ? `, ${evCount} event${evCount !== 1 ? 's' : ''}` : ''}`;
+    cell.setAttribute('aria-label', cellLabel);
+
     const MAX_VISIBLE = 4;
     dayEvents.slice(0, MAX_VISIBLE).forEach(ev => {
       cell.appendChild(createChip(ev));
@@ -134,10 +143,19 @@ function renderCalendar() {
       const more = document.createElement('div');
       more.className = 'more-events';
       more.textContent = `${dayEvents.length - MAX_VISIBLE} more`;
+      more.setAttribute('tabindex', '0');
+      more.setAttribute('role', 'button');
+      more.setAttribute('aria-label', `${dayEvents.length - MAX_VISIBLE} more events on ${MONTHS[month]} ${day}`);
+      more.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openModal(dateStr); }
+      });
       cell.appendChild(more);
     }
 
     cell.addEventListener('click', () => openModal(dateStr));
+    cell.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openModal(dateStr); }
+    });
     calGrid.appendChild(cell);
   }
 
@@ -151,6 +169,7 @@ function createChip(ev) {
   chip.dataset.id   = ev.id;
   chip.dataset.date = ev.date;
   chip.title = ev.title + (ev.startTime ? ` · ${formatTime(ev.startTime)}` : '');
+  chip.setAttribute('aria-label', ev.title + (ev.startTime ? `, ${formatTime(ev.startTime)}` : ''));
 
   if (ev.startTime) {
     const dot = document.createElement('span');
@@ -205,6 +224,9 @@ function renderMiniCalendar() {
 
     const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
     el.textContent = day;
+    el.setAttribute('tabindex', '0');
+    el.setAttribute('role', 'button');
+    el.setAttribute('aria-label', `Go to ${MONTHS[month]} ${day}, ${year}`);
     if (dateStr === todayStr) el.classList.add('today');
 
     // Highlight current main-calendar month
@@ -218,6 +240,14 @@ function renderMiniCalendar() {
       currentYear  = year;
       currentMonth = month;
       renderCalendar();
+    });
+    el.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        currentYear  = year;
+        currentMonth = month;
+        renderCalendar();
+      }
     });
     miniGrid.appendChild(el);
   }
